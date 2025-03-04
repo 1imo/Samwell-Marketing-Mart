@@ -309,4 +309,65 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Add metrics to success story cards
+    const successStoryMetrics = [
+        {
+            installs: '82K',
+            installsGrowth: '280%',
+            reviews: '2.8K',
+            reviewsGrowth: '250%',
+            reach: '246K',
+            reachGrowth: '265%'
+        },
+        {
+            installs: '55K',
+            installsGrowth: '210%',
+            reviews: '2.2K',
+            reviewsGrowth: '225%',
+            reach: '165K',
+            reachGrowth: '220%'
+        },
+        {
+            installs: '70K',
+            installsGrowth: '245%',
+            reviews: '2.5K',
+            reviewsGrowth: '235%',
+            reach: '210K',
+            reachGrowth: '240%'
+        },
+        {
+            installs: '95K',
+            installsGrowth: '290%',
+            reviews: '3.2K',
+            reviewsGrowth: '270%',
+            reach: '285K',
+            reachGrowth: '285%'
+        }
+    ];
+
+    document.querySelectorAll('.success-story-card:not(.main-card)').forEach((card, index) => {
+        if (index < successStoryMetrics.length) {
+            const metrics = successStoryMetrics[index];
+            const metricsHTML = `
+                <div class="metrics-container compact">
+                    <div class="metrics-summary">
+                        <div class="metric">
+                            <span class="metric-label">Total Installs</span>
+                            <span class="metric-value">${metrics.installs}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Reviews</span>
+                            <span class="metric-value">${metrics.reviews}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Est. Reach</span>
+                            <span class="metric-value">${metrics.reach}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            card.insertAdjacentHTML('beforeend', metricsHTML);
+        }
+    });
 });

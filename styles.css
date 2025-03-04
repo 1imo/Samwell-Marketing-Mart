@@ -619,7 +619,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .pricing-title {
-    font-size: 1.5rem;
+    font-size: var(--font-2xl);
     font-weight: 700;
     margin-bottom: 0.5rem;
 }
@@ -635,6 +635,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .pricing-description {
+    font-size: var(--font-base);
     color: hsl(var(--muted-foreground));
     margin-bottom: 2rem;
 }
@@ -651,6 +652,7 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     gap: 0.75rem;
     margin-bottom: calc(var(--content-spacing) * 0.5);
+    font-size: var(--font-base);
 }
 
 .pricing-feature svg {
@@ -660,6 +662,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .pricing-cta {
     margin-top: auto;
+}
+
+.btn-outline {
+    padding: 0;
 }
 
 /* Results section */
@@ -821,7 +827,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .testimonial-role {
-    font-size: 0.875rem;
+    font-size: var(--font-sm);
     color: hsl(var(--muted-foreground));
 }
 
@@ -836,6 +842,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .testimonial-content {
+    font-size: var(--font-base);
     color: hsl(var(--muted-foreground));
     margin-bottom: 1.5rem;
 }
@@ -878,7 +885,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .footer-copy {
     color: hsl(var(--muted-foreground));
-    font-size: 0.875rem;
+    font-size: var(--font-sm);
 }
 
 @media (max-width: 640px) {
@@ -924,7 +931,6 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: calc(var(--radius) - 4px);
     padding: 1rem;
     height: auto;
-    margin-bottom: 1.5rem;
     width: 100%;
     box-sizing: border-box;
     overflow: hidden;
@@ -943,13 +949,14 @@ h1, h2, h3, h4, h5, h6 {
 
 .metrics-summary {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 1rem;
-    padding: 0.5rem;
 }
 
 .metric {
     text-align: center;
+    display: grid;
+    gap: 4px
 }
 
 .metric-label {
@@ -980,7 +987,6 @@ h1, h2, h3, h4, h5, h6 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: var(--content-spacing);
-    margin-top: var(--section-spacing-sm);
     width: 100%;
     padding: 0 1rem;
     box-sizing: border-box;
@@ -1142,7 +1148,7 @@ textarea.form-input + .input-icon {
 }
 
 .extension-info h4 {
-    font-size: 1.25rem;
+    font-size: var(--font-lg);
     font-weight: 600;
     margin-bottom: 0.25rem;
 }
@@ -1150,7 +1156,7 @@ textarea.form-input + .input-icon {
 .extension-link {
     color: hsl(var(--primary));
     text-decoration: none;
-    font-size: 0.875rem;
+    font-size: var(--font-sm);
     transition: opacity 0.3s ease;
 }
 
@@ -1256,4 +1262,87 @@ section:last-of-type {
     .testimonials-stack {
         gap: var(--content-spacing);
     }
+}
+
+.results-layout {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.results-layout .main-card {
+    flex: 1;
+    min-width: 300px;
+    height: calc(100% - 1.5rem);
+    display: flex;
+    flex-direction: column;
+}
+
+.results-layout .success-stories-grid {
+    flex: 2;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    height: 100%;
+}
+
+.main-card .metrics-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-card .metrics-container canvas {
+    flex: 1;
+    min-height: 0;
+}
+
+.success-story-card {
+    height: calc((100% - 1.5rem) / 2);
+    min-height: 192px;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 1024px) {
+    .results-layout {
+        flex-direction: column;
+    }
+    
+    .results-layout .main-card,
+    .results-layout .success-stories-grid {
+        width: 100%;
+    }
+
+    .main-card {
+        height: 400px;
+    }
+
+    .success-story-card {
+        height: auto;
+        min-height: 192px;
+    }
+}
+
+
+.metrics-container.compact {
+    padding: 0.5rem;
+}
+
+.metrics-container.compact .metrics-summary {
+    gap: 0.25rem;
+}
+
+.metrics-container.compact .metric-label {
+    font-size: 0.75rem;
+    margin-bottom: 0.1rem;
+}
+
+.metrics-container.compact .metric-value {
+    font-size: 0.75rem;
+    margin-bottom: 0.1rem;
+}
+
+.metrics-container.compact .metric-change {
+    font-size: 0.55rem;
 }
