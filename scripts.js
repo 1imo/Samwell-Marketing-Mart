@@ -6,12 +6,22 @@ document.addEventListener('DOMContentLoaded', function() {
         return data.map(value => (value / initial) * 100);
     }
 
-    // Charts for metrics
+    // Main Chart Initialization
     if (document.getElementById('pdfMasterChart')) {
         const pdfInstalls = [30000, 45000, 65000, 85000, 105000, 125000];
         const pdfReviews = [1100, 1800, 2500, 3200, 3800, 4200];
 
         const pdfMasterCtx = document.getElementById('pdfMasterChart').getContext('2d');
+        
+        // Enhanced chart styling
+        const gradientInstalls = pdfMasterCtx.createLinearGradient(0, 0, 0, 200);
+        gradientInstalls.addColorStop(0, 'hsla(250, 96%, 64%, 1)');
+        gradientInstalls.addColorStop(1, 'hsla(250, 96%, 64%, 0)');
+        
+        const gradientReviews = pdfMasterCtx.createLinearGradient(0, 0, 0, 200);
+        gradientReviews.addColorStop(0, 'hsla(270, 91%, 65%, 1)');
+        gradientReviews.addColorStop(1, 'hsla(270, 91%, 65%, 0)');
+        
         const pdfMasterChart = new Chart(pdfMasterCtx, {
             type: 'line',
             data: {
@@ -20,16 +30,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     label: 'Installs',
                     data: normalizeData(pdfInstalls),
                     borderColor: 'hsl(250, 96%, 64%)',
+                    backgroundColor: gradientInstalls,
                     tension: 0.4,
-                    fill: false,
-                    pointRadius: 0
+                    fill: true,
+                    pointRadius: 0,
+                    borderWidth: 3
                 }, {
                     label: 'Reviews',
                     data: normalizeData(pdfReviews),
                     borderColor: 'hsl(270, 91%, 65%)',
+                    backgroundColor: gradientReviews,
                     tension: 0.4,
-                    fill: false,
-                    pointRadius: 0
+                    fill: true,
+                    pointRadius: 0,
+                    borderWidth: 3
                 }]
             },
             options: {
@@ -61,91 +75,29 @@ document.addEventListener('DOMContentLoaded', function() {
                         padding: 12,
                         displayColors: false,
                         callbacks: {
-                            title: () => '', // Remove title
+                            title: (items) => {
+                                return items[0].label;
+                            },
                             label: function(context) {
-                                return `${context.dataset.label}`;
+                                const value = context.parsed.y.toFixed(1);
+                                return `${context.dataset.label}: ${value}%`;
                             }
                         }
                     }
                 },
                 interaction: {
-                    intersect: true,
-                    mode: 'nearest'
+                    intersect: false,
+                    mode: 'index'
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
                 }
             }
         });
     }
 
-    if (document.getElementById('tabMasterChart')) {
-        const tabInstalls = [15000, 25000, 40000, 55000, 70000, 82000];
-        const tabReviews = [600, 1200, 1800, 2200, 2500, 2800];
-
-        const tabMasterCtx = document.getElementById('tabMasterChart').getContext('2d');
-        const tabMasterChart = new Chart(tabMasterCtx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Installs',
-                    data: normalizeData(tabInstalls),
-                    borderColor: 'hsl(250, 96%, 64%)',
-                    tension: 0.4,
-                    fill: false,
-                    pointRadius: 0
-                }, {
-                    label: 'Reviews',
-                    data: normalizeData(tabReviews),
-                    borderColor: 'hsl(270, 91%, 65%)',
-                    tension: 0.4,
-                    fill: false,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                aspectRatio: window.innerWidth < 768 ? 1.5 : 2,
-                scales: {
-                    y: {
-                        display: false,
-                        min: 0,
-                        max: 450
-                    },
-                    x: {
-                        display: false
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        mode: 'nearest',
-                        intersect: true,
-                        backgroundColor: 'hsl(222, 47%, 6%)',
-                        titleColor: 'hsl(210, 40%, 98%)',
-                        bodyColor: 'hsl(215, 20%, 65%)',
-                        borderColor: 'hsla(217, 33%, 10%, 0.5)',
-                        borderWidth: 1,
-                        padding: 12,
-                        displayColors: false,
-                        callbacks: {
-                            title: () => '',
-                            label: function(context) {
-                                return `${context.dataset.label}`;
-                            }
-                        }
-                    }
-                },
-                interaction: {
-                    intersect: true,
-                    mode: 'nearest'
-                }
-            }
-        });
-    }
-
-    // Mobile menu functionality
+    // Mobile menu functionality with improved transitions
     const menuToggle = document.getElementById('menuToggle');
     const closeMenu = document.getElementById('closeMenu');
     const mobileMenu = document.getElementById('mobileMenu');
@@ -168,35 +120,44 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Navbar scroll effect
+    // Enhanced navbar scroll effect with smoother transition
     const navbar = document.querySelector('.navbar');
     
-    window.addEventListener('scroll', () => {
+    function handleNavbarScroll() {
         if (window.scrollY > 20) {
             navbar.classList.add('navbar-blur');
         } else {
             navbar.classList.remove('navbar-blur');
         }
-    });
+    }
+    
+    window.addEventListener('scroll', handleNavbarScroll);
+    // Initial check for page load at scrolled position
+    handleNavbarScroll();
 
-    // Animation on scroll
+    // Improved animation on scroll with thresholds
     const animateElements = document.querySelectorAll('.animate');
     
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('show');
+                // Add small random delay for staggered animation effect
+                const delay = Math.random() * 200;
+                setTimeout(() => {
+                    entry.target.classList.add('show');
+                }, delay);
             }
         });
     }, {
-        threshold: 0.1
+        threshold: 0.15,
+        rootMargin: '0px 0px -50px 0px'
     });
     
     animateElements.forEach(element => {
         observer.observe(element);
     });
     
-    // Initial check
+    // Initial check for elements in view on page load
     setTimeout(() => {
         const visibleElements = document.querySelectorAll('.animate');
         visibleElements.forEach(element => {
@@ -207,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, 100);
 
-    // Smooth scrolling for anchor links
+    // Enhanced smooth scrolling with offset calculation
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
@@ -228,19 +189,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Add particle animations
+    // Enhanced particle animations
     function createParticles() {
         const particlesContainer = document.querySelector('.particles-container');
         if (!particlesContainer) return;
         
-        const particleCount = 5; // Already have 5 defined in HTML
+        // We already have 5 static particles in HTML, add a few more dynamically
+        const particleCount = 5;
         
         for (let i = 0; i < particleCount; i++) {
             const particle = document.createElement('div');
             particle.classList.add('particle');
             
-            // Random size between 30px and 150px
-            const size = Math.floor(Math.random() * 120) + 30;
+            // Random size between 30px and 200px
+            const size = Math.floor(Math.random() * 170) + 30;
             particle.style.width = `${size}px`;
             particle.style.height = `${size}px`;
             
@@ -251,8 +213,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Random opacity between 0.02 and 0.05
             particle.style.opacity = (Math.random() * 0.03 + 0.02).toString();
             
-            // Random animation delay
+            // Random animation delay and duration
             particle.style.animationDelay = `${Math.random() * 5}s`;
+            particle.style.animationDuration = `${Math.random() * 10 + 15}s`; // Between 15-25s
             
             particlesContainer.appendChild(particle);
         }
@@ -260,56 +223,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     createParticles();
     
-    // Form handling
-    const form = document.querySelector('.contact-form');
-    if (form) {
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Validate all required fields
-            const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
-            let isValid = true;
-
-            inputs.forEach(input => {
-                if (!input.value.trim()) {
-                    isValid = false;
-                    input.classList.add('error');
-                    input.addEventListener('input', () => input.classList.remove('error'));
-                } else {
-                    input.classList.remove('error');
-                }
-            });
-
-            if (isValid) {
-                const submitButton = form.querySelector('button[type="submit"]');
-                submitButton.disabled = true;
-                submitButton.innerHTML = `
-                    <span>Sending...</span>
-                    <svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="2" x2="12" y2="6"></line>
-                        <line x1="12" y1="18" x2="12" y2="22"></line>
-                        <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
-                        <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
-                        <line x1="2" y1="12" x2="6" y2="12"></line>
-                        <line x1="18" y1="12" x2="22" y2="12"></line>
-                        <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
-                        <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
-                    </svg>
-                `;
-                
-                // Simulate form submission (replace with actual form submission)
-                setTimeout(() => {
-                    submitButton.innerHTML = `
-                        <span>Message Sent!</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 6L9 17l-5-5"></path>
-                        </svg>
-                    `;
-                }, 2000);
-            }
-        });
-    }
-
     // Add metrics to success story cards
     const successStoryMetrics = [
         {
@@ -355,19 +268,204 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="metric">
                             <span class="metric-label">Total Installs</span>
                             <span class="metric-value">${metrics.installs}</span>
+          
                         </div>
                         <div class="metric">
                             <span class="metric-label">Reviews</span>
                             <span class="metric-value">${metrics.reviews}</span>
+                        
                         </div>
                         <div class="metric">
                             <span class="metric-label">Est. Reach</span>
                             <span class="metric-value">${metrics.reach}</span>
+              
                         </div>
                     </div>
                 </div>
             `;
             card.insertAdjacentHTML('beforeend', metricsHTML);
         }
+    });
+
+    // Add smooth reveal animations for metrics values
+    const metricValues = document.querySelectorAll('.metric-value');
+    
+    metricValues.forEach(value => {
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    value.classList.add('revealed');
+                    observer.unobserve(value);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        observer.observe(value);
+    });
+
+    // Enhance navigation highlight based on scroll position
+    function updateActiveNavLink() {
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        let currentSection = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+            const navHeight = document.querySelector('.navbar').offsetHeight;
+            
+            if (window.scrollY >= sectionTop - navHeight - 100) {
+                currentSection = section.getAttribute('id');
+            }
+        });
+        
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            const href = link.getAttribute('href').substring(1);
+            if (href === currentSection) {
+                link.classList.add('active');
+            }
+        });
+    }
+    
+    window.addEventListener('scroll', updateActiveNavLink);
+    updateActiveNavLink();
+
+    // Add additional subtle hover effects to interactive elements
+    document.querySelectorAll('.extension-link, .pricing-feature, .testimonial-avatar').forEach(element => {
+        element.addEventListener('mouseenter', function() {
+            this.classList.add('hover-effect');
+        });
+        
+        element.addEventListener('mouseleave', function() {
+            this.classList.remove('hover-effect');
+        });
+    });
+    
+    // Optimize performance by debouncing scroll events
+    function debounce(func, wait = 10, immediate = true) {
+        let timeout;
+        return function() {
+            const context = this, args = arguments;
+            const later = function() {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+            const callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
+        };
+    }
+    
+    const debouncedHandleScroll = debounce(function() {
+        handleNavbarScroll();
+        updateActiveNavLink();
+    }, 15);
+    
+    window.removeEventListener('scroll', handleNavbarScroll);
+    window.removeEventListener('scroll', updateActiveNavLink);
+    window.addEventListener('scroll', debouncedHandleScroll);
+
+    // Add parallax effect to hero section
+    const heroSection = document.querySelector('.hero');
+    
+    if (heroSection) {
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.scrollY;
+            if (scrollPosition < window.innerHeight) {
+                const parallaxOffset = scrollPosition * 0.4;
+                heroSection.style.backgroundPositionY = `-${parallaxOffset}px`;
+                
+                // Move particles with scroll for added depth
+                const particles = document.querySelectorAll('.particle');
+                particles.forEach((particle, index) => {
+                    const speed = (index % 3 + 1) * 0.1;
+                    const yOffset = scrollPosition * speed;
+                    particle.style.transform = `translateY(${yOffset}px)`;
+                });
+            }
+        });
+    }
+
+    // Add responsive image loading for better performance
+    document.querySelectorAll('.extension-logo').forEach(img => {
+        img.loading = 'lazy';
+    });
+
+    // Add click animation to buttons
+    document.querySelectorAll('.btn, .contact-button').forEach(button => {
+        button.addEventListener('mousedown', function() {
+            this.classList.add('btn-active');
+        });
+        
+        button.addEventListener('mouseup', function() {
+            this.classList.remove('btn-active');
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            this.classList.remove('btn-active');
+        });
+    });
+
+    // Add year to footer copyright automatically
+    const footerCopy = document.querySelector('.footer-copy');
+    if (footerCopy) {
+        const currentYear = new Date().getFullYear();
+        footerCopy.innerHTML = footerCopy.innerHTML.replace('2023', currentYear);
+    }
+
+    // Add toast notification system for future features
+    function createToast(message, type = 'info', duration = 3000) {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = message;
+        
+        // Create toast container if it doesn't exist
+        let toastContainer = document.querySelector('.toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.className = 'toast-container';
+            document.body.appendChild(toastContainer);
+        }
+        
+        toastContainer.appendChild(toast);
+        
+        // Animate in
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 10);
+        
+        // Remove after duration
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }, duration);
+    }
+
+    setTimeout(() => {
+        createToast('Welcome to Samwell Marketing!', 'success');
+    }, 2000);
+
+    // Detect when elements enter viewport with IntersectionObserver
+    function handleIntersection(entries, observer) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+                observer.unobserve(entry.target);
+            }
+        });
+    }
+
+    const viewObserver = new IntersectionObserver(handleIntersection, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    document.querySelectorAll('.feature-card, .pricing-card, .testimonial-card, .success-story-card').forEach(element => {
+        viewObserver.observe(element);
     });
 });
